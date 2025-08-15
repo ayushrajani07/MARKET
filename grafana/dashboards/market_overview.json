@@ -1,0 +1,47 @@
+{
+  "id": null,
+  "uid": "market-oview",
+  "title": "Market Overview (IST)",
+  "tags": [],
+  "timezone": "Asia/Kolkata",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Index Overview - Price",
+      "targets": [
+        {
+          "query": "import \"timezone\"\noption location = timezone.location(name: \"Asia/Kolkata\")\n\nfrom(bucket: \"market_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"index_overview\" and r._field == \"price\")\n  |> keep(columns: [\"_time\",\"_value\",\"index\"])\n  |> sort(columns: [\"_time\"])",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-v2"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currency",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 9 }
+    },
+    {
+      "type": "table",
+      "title": "Option Data - Last Snapshot",
+      "targets": [
+        {
+          "query": "import \"timezone\"\noption location = timezone.location(name: \"Asia/Kolkata\")\n\nfrom(bucket: \"market_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"option_data\" and r._field == \"last_price\")\n  |> group(columns:[\"symbol\",\"expiration\",\"option_type\",\"strike\"])\n  |> last()\n  |> sort(columns: [\"symbol\",\"strike\"])",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-v2"
+          }
+        }
+      ],
+      "gridPos": { "x": 0, "y": 9, "w": 24, "h": 10 }
+    }
+  ]
+}

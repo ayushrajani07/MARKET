@@ -1,0 +1,181 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Overall Status",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -2m) |> filter(fn: (r) => r._measurement == \"monitor_status\") |> keep(columns: [\"status\", \"_field\", \"_value\", \"_time\"]) |> last()"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto" },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "type": "stat",
+      "title": "Lag - index_overview (s)",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"monitor_status\" and r._field == \"lag_sec_index_overview\") |> last()"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "type": "stat",
+      "title": "Lag - atm_option_quote (s)",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"monitor_status\" and r._field == \"lag_sec_atm_option_quote\") |> last()"
+        }
+      ],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pipeline Loop Duration (ms)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 4 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"pipeline_tick\" and r._field == \"loop_duration_ms\") |> aggregateWindow(every: 30s, fn: mean)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "ATM / Overview Collect Duration (ms)",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 4 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"pipeline_tick\" and (r._field == \"atm_collect_ms\" or r._field == \"overview_collect_ms\")) |> aggregateWindow(every: 30s, fn: mean)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Feed Freshness (Points/min)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 10 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"index_overview\" or r._measurement == \"atm_option_quote\") |> aggregateWindow(every: 1m, fn: count)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Influx Write Health (Written vs Rejected / min)",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 10 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"influx_write_stats\" and (r._field == \"points_written\" or r._field == \"points_rejected\")) |> aggregateWindow(every: 1m, fn: sum)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Broker Health (Latency ms, 429 Count)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 16 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"broker_health\" and (r._field == \"quote_latency_ms\" or r._field == \"http_429_count\")) |> aggregateWindow(every: 30s, fn: mean)"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (%)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 22 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"system_metrics\" and r._field == \"cpu_percent\") |> aggregateWindow(every: 10s, fn: mean)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Usage (%)",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 22 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"system_metrics\" and r._field == \"mem_percent\") |> aggregateWindow(every: 10s, fn: mean)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk Usage (%)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 28 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -30m) |> filter(fn: (r) => r._measurement == \"system_metrics\" and r._field == \"disk_used_percent\") |> aggregateWindow(every: 30s, fn: mean)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Network Throughput (MB/s)",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 28 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -15m) |> filter(fn: (r) => r._measurement == \"system_metrics\" and (r._field == \"net_tx_mb_s\" or r._field == \"net_rx_mb_s\")) |> aggregateWindow(every: 10s, fn: mean)"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Errors and Warnings (per min)",
+      "gridPos": { "h": 6, "w": 16, "x": 0, "y": 34 },
+      "datasource": { "uid": "eeuyszx2tqxa8d", "type": "influxdb" },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"your-bucket\") |> range(start: -30m) |> filter(fn: (r) => r._measurement == \"monitor_status\" and (r._field == \"errors_in_tick\" or r._field == \"influx_points_rejected\" or r._field == \"kite_429_count\")) |> aggregateWindow(every: 1m, fn: sum)"
+        }
+      ]
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["market", "health", "pipeline", "system"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timezone": "",
+  "title": "Market Pipeline Health (Live)",
+  "version": 2
+}

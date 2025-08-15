@@ -1,0 +1,134 @@
+  # 1) Overview per index (broad metrics)
+  - name: "index_overview"
+    tags:
+      - index            # "NIFTY 50","SENSEX","BANKNIFTY"
+      - source           # e.g., "kite" (optional)
+    fields:
+      # Time bucketing
+      - key: "timestamp_rounded"
+        type: "string"   # "HH:MM:00" or "HH:MM:30"
+        derived: true
+      # Index prices and OHLC
+      - key: "atm_strike"
+        type: "integer"  # rounded by atm_rules
+        derived: true
+      - key: "last_price"
+        type: "float"
+      - key: "open"
+        type: "float"
+      - key: "high"
+        type: "float"
+      - key: "low"
+        type: "float"
+      - key: "close"
+        type: "float"
+      # Changes
+      - key: "net_change"
+        type: "float"    # last_price - prev_close
+        derived: true
+      - key: "net_change_percent"
+        type: "float"    # (net_change / prev_close)*100
+        derived: true
+      - key: "day_change"
+        type: "float"    # last_price - open
+        derived: true
+      - key: "day_change_percent"
+        type: "float"    # (day_change / open)*100
+        derived: true
+      - key: "day_width"
+        type: "float"    # high - low
+        derived: true
+      - key: "day_width_percent"
+        type: "float"    # day_width / open * 100 (or prev_close)
+        derived: true
+      # IV & PCR and tenor aggregates (this week / next week / month)
+      - key: "iv_open"
+        type: "float"    # this week IV (session open reference)
+      - key: "iv_day_change"
+        type: "float"    # iv_open - atm_strike_iv
+        derived: true
+      - key: "atm_strike_iv"
+        type: "float"    # this week ATM IV (current)
+      - key: "days_to_expiry"
+        type: "integer"  # this week
+      - key: "pcr_week"
+        type: "float"
+      - key: "pcr_next_week"
+        type: "float"
+      - key: "pcr_month"
+        type: "float"
+      # Aggregated totals by tenor
+      - key: "THIS_WEEK_TP"
+        type: "float"    # total ATM premium sum for week
+      - key: "THIS_WEEK_OI_CALL"
+        type: "integer"
+      - key: "THIS_WEEK_OI_PUT"
+        type: "integer"
+      - key: "NEXT_WEEK_TP"
+        type: "float"
+      - key: "NEXT_WEEK_OI_CALL"
+        type: "integer"
+      - key: "NEXT_WEEK_OI_PUT"
+        type: "integer"
+      - key: "MONTH_TP"
+        type: "float"
+      - key: "MONTH_OI_CALL"
+        type: "integer"
+      - key: "MONTH_OI_PUT"
+        type: "integer"
+
+  # 2) ATM instruments (separate logs for CALL and PUT)
+  - name: "atm_option_quote"
+    tags:
+      - index            # "NIFTY 50","SENSEX","BANKNIFTY"
+      - option_type      # "CE" | "PE"
+      - expiration       # "YYYY-MM-DD"
+      - strike           # ATM strike as string to stabilize type[1]
+    fields:
+      - key: "timestamp_rounded"
+        type: "string"   # "HH:MM:00" or "HH:MM:30"
+        derived: true
+      - key: "expiry"
+        type: "string"   # duplicate of tag if needed in CSV/UI
+      - key: "last_price"
+        type: "float"
+      - key: "atm_strike"
+        type: "integer"  # rounded from index LTP per atm_rules
+        derived: true
+      - key: "days_to_expiry"
+        type: "integer"
+      - key: "average_price"
+        type: "float"    # VWAP
+      - key: "volume"
+        type: "integer"
+      - key: "oi"
+        type: "integer"
+      - key: "oi_call"
+        type: "integer"
+      - key: "oi_put"
+        type: "integer"
+      - key: "oi_open"
+        type: "integer"
+      - key: "oi_change"
+        type: "integer"  # oi_open - oi
+        derived: true
+      - key: "ohlc_open"
+        type: "float"
+      - key: "ohlc_high"
+        type: "float"
+      - key: "ohlc_low"
+        type: "float"
+      - key: "ohlc_close"
+        type: "float"
+      - key: "net_change"
+        type: "float"    # last_price - prev_close (per option)
+        derived: true
+      - key: "net_change_percent"
+        type: "float"    # (net_change/prev_close)*100
+        derived: true
+      - key: "day_change"
+        type: "float"    # last_price - ohlc_open
+        derived: true
+      - key: "day_change_percent"
+        type: "float"    # (day_change/ohlc_open)*100
+        derived: true

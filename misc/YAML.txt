@@ -1,0 +1,43 @@
+NIFTY_50:
+  base_folder: "data/NIFTY 50"
+  tenors:
+    - name: "THIS_WEEK"
+      folder: "THIS_WEEK/options"
+      cadence: "30s"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+    - name: "NEXT_WEEK"
+      folder: "NEXT_WEEK/options"
+      cadence: "30s"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+    - name: "MONTH"
+      folder: "MONTH/options"
+      cadence: "2m"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+
+SENSEX:
+  base_folder: "data/SENSEX"
+  tenors:
+    - name: "THIS_WEEK"
+      folder: "THIS_WEEK/options"
+      cadence: "30s"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+    - name: "NEXT_WEEK"
+      folder: "NEXT_WEEK/options"
+      cadence: "30s"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+    - name: "MONTH"
+      folder: "MONTH/options"
+      cadence: "2m"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+
+BANKNIFTY:
+  base_folder: "data/BANKNIFTY"
+  tenors:
+    - name: "THIS_MONTH"
+      folder: "THIS_MONTH/options"
+      cadence: "2m"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]
+    - name: "NEXT_MONTH"
+      folder: "NEXT_MONTH/options"
+      cadence: "2m"
+      files: ["DD-MM-YYYY_CE", "DD-MM-YYYY_PE"]

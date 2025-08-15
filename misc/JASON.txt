@@ -1,0 +1,171 @@
+{
+"app": {
+"data_root": "data",
+"timezone_display": "Asia/Kolkata",
+"storage": {
+"influx": { "bucket": "market_data", "org": "your-org", "precision": "ns", "utc_storage": true },
+"csv": { "base_dir": "data" }
+},
+"time_bucketing": { "overview_round_to": "30s", "options_round_to": "30s" },
+"atm_rules": { "NIFTY_50": { "nearest": 50 }, "SENSEX": { "nearest": 100 }, "BANKNIFTY": { "nearest": 100 } },
+"layout": {
+"OVERVIEW": {
+"folder": "data/OVERVIEW",
+"per_index_daily_subfolders": true,
+"cadence": "30s",
+"indices": [{ "name": "NIFTY 50" }, { "name": "SENSEX" }, { "name": "BANKNIFTY" }]
+},
+"NIFTY_50": {
+"base_folder": "data/NIFTY 50",
+"tenors": [
+{ "name": "THIS_WEEK", "folder": "THIS_WEEK/options", "cadence": "30s", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] },
+{ "name": "NEXT_WEEK", "folder": "NEXT_WEEK/options", "cadence": "30s", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] },
+{ "name": "MONTH", "folder": "MONTH/options", "cadence": "2m", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] }
+]
+},
+"SENSEX": {
+"base_folder": "data/SENSEX",
+"tenors": [
+{ "name": "THIS_WEEK", "folder": "THIS_WEEK/options", "cadence": "30s", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] },
+{ "name": "NEXT_WEEK", "folder": "NEXT_WEEK/options", "cadence": "30s", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] },
+{ "name": "MONTH", "folder": "MONTH/options", "cadence": "2m", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] }
+]
+},
+"BANKNIFTY": {
+"base_folder": "data/BANKNIFTY",
+"tenors": [
+{ "name": "THIS_MONTH", "folder": "THIS_MONTH/options", "cadence": "2m", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] },
+{ "name": "NEXT_MONTH", "folder": "NEXT_MONTH/options", "cadence": "2m", "files": ["DD-MM-YYYY_CE","DD-MM-YYYY_PE"] }
+]
+}
+},
+"influx_schema": {
+"measurements": [
+{
+"name": "index_overview",
+"tags": ["index","source"],
+"fields": [
+{ "key": "timestamp_rounded", "type": "string", "derived": true },
+{ "key": "atm_strike", "type": "integer", "derived": true },
+{ "key": "last_price", "type": "float" },
+{ "key": "open", "type": "float" },
+{ "key": "high", "type": "float" },
+{ "key": "low", "type": "float" },
+{ "key": "close", "type": "float" },
+{ "key": "net_change", "type": "float", "derived": true },
+{ "key": "net_change_percent", "type": "float", "derived": true },
+{ "key": "day_change", "type": "float", "derived": true },
+{ "key": "day_change_percent", "type": "float", "derived": true },
+{ "key": "day_width", "type": "float", "derived": true },
+{ "key": "day_width_percent", "type": "float", "derived": true },
+{ "key": "iv_open", "type": "float" },
+{ "key": "iv_day_change", "type": "float", "derived": true },
+{ "key": "atm_strike_iv", "type": "float" },
+{ "key": "days_to_expiry", "type": "integer" },
+{ "key": "pcr_week", "type": "float" },
+{ "key": "pcr_next_week", "type": "float" },
+{ "key": "pcr_month", "type": "float" },
+{ "key": "THIS_WEEK_TP", "type": "float" },
+{ "key": "THIS_WEEK_OI_CALL", "type": "integer" },
+{ "key": "THIS_WEEK_OI_PUT", "type": "integer" },
+{ "key": "NEXT_WEEK_TP", "type": "float" },
+{ "key": "NEXT_WEEK_OI_CALL", "type": "integer" },
+{ "key": "NEXT_WEEK_OI_PUT", "type": "integer" },
+{ "key": "MONTH_TP", "type": "float" },
+{ "key": "MONTH_OI_CALL", "type": "integer" },
+{ "key": "MONTH_OI_PUT", "type": "integer" }
+]
+},
+{
+"name": "atm_option_quote",
+"tags": ["index","option_type","expiration","strike"],
+"fields": [
+{ "key": "timestamp_rounded", "type": "string", "derived": true },
+{ "key": "expiry", "type": "string" },
+{ "key": "last_price", "type": "float" },
+{ "key": "atm_strike", "type": "integer", "derived": true },
+{ "key": "days_to_expiry", "type": "integer" },
+{ "key": "average_price", "type": "float" },
+{ "key": "volume", "type": "integer" },
+{ "key": "oi", "type": "integer" },
+{ "key": "oi_call", "type": "integer" },
+{ "key": "oi_put", "type": "integer" },
+{ "key": "oi_open", "type": "integer" },
+{ "key": "oi_change", "type": "integer", "derived": true },
+{ "key": "ohlc_open", "type": "float" },
+{ "key": "ohlc_high", "type": "float" },
+{ "key": "ohlc_low", "type": "float" },
+{ "key": "ohlc_close", "type": "float" },
+{ "key": "net_change", "type": "float", "derived": true },
+{ "key": "net_change_percent", "type": "float", "derived": true },
+{ "key": "day_change", "type": "float", "derived": true },
+{ "key": "day_change_percent", "type": "float", "derived": true }
+]
+}
+]
+},
+"csv_headers": {
+"overview": [
+"timestamp_utc","timestamp_rounded","index","atm_strike","last_price","open","high","low","close",
+"net_change","net_change_percent","day_change","day_change_percent","day_width","day_width_percent",
+"iv_open","iv_day_change","atm_strike_iv","days_to_expiry","pcr_week","pcr_next_week","pcr_month",
+"THIS_WEEK_TP","THIS_WEEK_OI_CALL","THIS_WEEK_OI_PUT","NEXT_WEEK_TP","NEXT_WEEK_OI_CALL","NEXT_WEEK_OI_PUT",
+"MONTH_TP","MONTH_OI_CALL","MONTH_OI_PUT"
+],
+"atm_option_quote": [
+"timestamp_utc","timestamp_rounded","index","option_type","expiration","strike","expiry","last_price",
+"atm_strike","days_to_expiry","average_price","volume","oi","oi_call","oi_put","oi_open","oi_change",
+"ohlc_open","ohlc_high","ohlc_low","ohlc_close","net_change","net_change_percent","day_change","day_change_percent"
+]
+},
+"validation": {
+"index_overview": {
+"required_tags": ["index"],
+"required_fields": ["last_price"],
+"numeric_fields": [
+"last_price","open","high","low","close","net_change","net_change_percent","day_change","day_change_percent",
+"day_width","day_width_percent","iv_open","iv_day_change","atm_strike_iv","days_to_expiry","pcr_week",
+"pcr_next_week","pcr_month","THIS_WEEK_TP","THIS_WEEK_OI_CALL","THIS_WEEK_OI_PUT","NEXT_WEEK_TP",
+"NEXT_WEEK_OI_CALL","NEXT_WEEK_OI_PUT","MONTH_TP","MONTH_OI_CALL","MONTH_OI_PUT"
+]
+},
+"atm_option_quote": {
+"required_tags": ["index","option_type","expiration","strike"],
+"required_fields": ["last_price"],
+"numeric_fields": [
+"last_price","atm_strike","days_to_expiry","average_price","volume","oi","oi_call","oi_put","oi_open",
+"oi_change","ohlc_open","ohlc_high","ohlc_low","ohlc_close","net_change","net_change_percent","day_change","day_change_percent"
+]
+}
+},
+"derived_rules": {
+"timestamp_rounded": { "round_to": "30s" },
+"atm_strike": {
+"by_index": { "NIFTY 50": 50, "SENSEX": 100, "BANKNIFTY": 100 },
+"source_field": "last_price"
+},
+"net_change": { "formula": "last_price - prev_close" },
+"net_change_percent": { "formula": "net_change / prev_close * 100" },
+"day_change": { "formula": "last_price - open", "option_formula": "last_price - ohlc_open" },
+"day_change_percent": { "formula": "day_change / open * 100", "option_formula": "day_change / ohlc_open * 100" },
+"day_width": { "formula": "high - low" },
+"day_width_percent": { "formula": "day_width / open * 100" },
+"iv_day_change": { "formula": "iv_open - atm_strike_iv" },
+"oi_change": { "formula": "oi_open - oi" }
+},
+"retention_and_rollups": {
+"index_overview": {
+"raw_retention": "60d",
+"rollups": [
+{ "to_bucket": "market_data_1m", "every": "1m", "fields": { "last_price": "mean","high": "max","low": "min","volume": "sum","close": "last" } }
+]
+},
+"atm_option_quote": {
+"raw_retention": "14d",
+"rollups": [
+{ "to_bucket": "market_data_5m", "every": "5m", "fields": { "last_price": "mean","volume": "sum","oi": "last","iv": "mean" } }
+]
+}
+}
+}
+}

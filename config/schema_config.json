@@ -1,0 +1,42 @@
+{
+  "app": {
+    "data_root": "data",
+    "timezone_display": "Asia/Kolkata",
+    "storage": {
+      "influx": { "bucket": "market_data", "org": "your-org", "precision": "ns", "utc_storage": true },
+      "csv": { "base_dir": "data" }
+    },
+    "time_bucketing": { "overview_round_to": "30s", "options_round_to": "30s" },
+    "atm_rules": { "NIFTY 50": { "nearest": 50 }, "SENSEX": { "nearest": 100 }, "BANKNIFTY": { "nearest": 100 } },
+
+    "collector_schedule": {
+      "fast_interval": 30,
+      "slow_interval": 120,
+      "fast_index_expiries": {
+        "NIFTY 50": ["2025-08-14", "2025-08-21"],
+        "SENSEX": ["2025-08-14"]
+      },
+      "slow_index_expiries": {
+        "NIFTY 50": ["2025-08-28"],
+        "SENSEX": ["2025-08-28"],
+        "BANKNIFTY": ["2025-08-28", "2025-09-25"]
+      }
+    },
+
+    "derived_rules": {
+      "timestamp_rounded": { "round_to": "30s" },
+      "atm_strike": {
+        "by_index": { "NIFTY 50": 50, "SENSEX": 100, "BANKNIFTY": 100 },
+        "source_field": "last_price"
+      },
+      "net_change": { "formula": "last_price - prev_close" },
+      "net_change_percent": { "formula": "net_change / prev_close * 100" },
+      "day_change": { "formula": "last_price - open", "option_formula": "last_price - ohlc_open" },
+      "day_change_percent": { "formula": "day_change / open * 100", "option_formula": "day_change / ohlc_open * 100" },
+      "day_width": { "formula": "high - low" },
+      "day_width_percent": { "formula": "day_width / open * 100" },
+      "iv_day_change": { "formula": "iv_open - atm_strike_iv" },
+      "oi_change": { "formula": "oi_open - oi" }
+    }
+  }
+}
